@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1d6fe0">
+<title>合买台账 · 手机版</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231d6fe0'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white'%3E合%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f5f6f8; --card:#fff; --line:#e5e7eb; --text:#1f2937; --sub:#6b7280;
+  --blue:#1d6fe0; --green:#0f9d58; --red:#d93025; --amber:#b45309;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);padding:10px;padding-bottom:36px;font-size:14px;
+}
+.wrap{max-width:760px;margin:0 auto}
+.warn{background:#fff5f5;border:1px solid #f3c2c2;color:#9b1c1c;border-radius:10px;
+  padding:9px 11px;font-size:12.2px;line-height:1.65;margin-bottom:10px}
+.warn b{display:block;margin-bottom:2px;font-size:12.8px}
+.k{color:#c0392b;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 5px;text-align:center}
+.stat .v{font-size:16px;font-weight:700}
+.stat .k2{font-size:10.5px;color:var(--sub);margin-top:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.h{font-size:15px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.row{display:flex;gap:7px}
+.row>*{flex:1;min-width:0}
+label{display:block;font-size:12px;color:var(--sub);margin:8px 0 4px}
+input,textarea,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;
+  font-size:14px;font-family:inherit;background:#fbfbfc;color:var(--text);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--blue);background:#fff}
+textarea{resize:vertical;min-height:50px}
+button{border:none;border-radius:8px;padding:9px 14px;font-size:14px;font-weight:600;
+  background:var(--blue);color:#fff;cursor:pointer;font-family:inherit}
+button:active{opacity:.85}
+button.ghost{background:#eef2f7;color:#37506e}
+button.gray{background:#f1f3f5;color:#59636e}
+button.red{background:#fdecec;color:#c0392b}
+button.sm{padding:6px 10px;font-size:12.5px;font-weight:500}
+.btnline{display:flex;gap:7px;margin-top:9px}
+.btnline button{flex:1}
+.plan{border-left:3px solid var(--blue)}
+.plan.settled{border-left-color:var(--green)}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:20px;
+  background:#e8f0fe;color:var(--blue);font-weight:600;white-space:nowrap}
+.tag.ok{background:#e7f5ec;color:var(--green)}
+.tag.warn{background:#fff4e5;color:var(--amber)}
+.mi{color:#455064;font-size:12.8px;line-height:1.6;white-space:pre-wrap;margin:5px 0 7px}
+.meta{font-size:12.4px;color:var(--sub);line-height:1.85}
+.meta b{color:var(--text);font-weight:600}
+.bar{height:6px;background:#eef1f5;border-radius:4px;overflow:hidden;margin:8px 0 3px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#1d6fe0,#0f9d58)}
+.plist{margin-top:8px;border-top:1px dashed var(--line);padding-top:7px}
+.plist .it{display:flex;align-items:center;justify-content:space-between;font-size:12.8px;padding:5px 0;gap:8px}
+.plist .it .nm{font-weight:600}
+.plist .it .ex{color:var(--sub);font-size:12px;margin-left:5px}
+.plist .it .rt{font-weight:700}
+.plist .it .rt.pos{color:var(--green)}
+.empty{color:var(--sub);font-size:12.5px;padding:5px 0}
+.settlebox{background:#f1f8f4;border:1px solid #cfe8da;border-radius:9px;padding:8px 10px;margin-top:8px;font-size:12.8px;line-height:1.8}
+.settlebox .big{font-size:15px;font-weight:700;color:var(--green)}
+.note{color:var(--sub);font-size:11.8px}
+.legrow{border:1px dashed #d7dde5;border-radius:9px;padding:7px;margin-bottom:7px;background:#fafbfd}
+.legrow .l1{display:grid;grid-template-columns:70px 1fr 1fr 24px;gap:5px;align-items:center}
+.legrow .l2{display:grid;grid-template-columns:1.1fr 1fr 74px;gap:5px;margin-top:5px}
+.legrow input,.legrow select{padding:7px 8px;font-size:13px}
+.legrow .del{background:none;color:#b71c1c;font-size:16px;padding:2px;width:24px}
+.calcrow{padding:9px 0;border-bottom:1px dashed #e9edf2}
+.calcrow:last-child{border-bottom:none}
+.mt1{display:flex;align-items:center;gap:6px;font-size:12.6px;color:var(--sub)}
+.mt1 .num{background:#e8f0fe;color:var(--blue);font-weight:700;padding:1px 6px;border-radius:5px}
+.mt1 .lg{color:#7b8794}
+.mt1 .wt{margin-left:auto;font-weight:600;color:#3b4657}
+.mt2{font-size:13.6px;font-weight:600;margin:3px 0 6px}
+.krow{display:flex;gap:5px}
+.kbtn{flex:1;padding:7px 2px;border:1px solid #dbe3ee;background:#fff;color:#25303f;border-radius:7px;font-size:13px;font-weight:600}
+.kbtn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.kbtn:disabled{opacity:.42}
+.olab2{font-size:11.5px;color:var(--sub);margin-bottom:4px}
+.selTag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:20px;background:#e7f5ec;color:#0f9d58;font-weight:700}
+.selTag.gray{background:#f1f3f5;color:#8a94a0;font-weight:500}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:5px}
+.scbtn{padding:6px 2px;border:1px solid #dbe3ee;background:#fff;border-radius:7px;line-height:1.25;color:#25303f}
+.scbtn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.scbtn b{display:block;font-size:13px;font-weight:700}
+.scbtn small{display:block;font-size:11px;opacity:.85;margin-top:1px}
+.obtn{flex:1;padding:7px 4px;border:1px solid #dbe3ee;background:#fff;color:#25303f;font-size:12.8px;
+  border-radius:7px;font-weight:600;line-height:1.35}
+.obtn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.obtn small{display:block;font-size:11.5px;font-weight:500;opacity:.85}
+.oRow{display:flex;gap:5px;margin-top:5px}
+.oLab{font-size:11.5px;color:var(--sub);margin-top:6px}
+.selbar{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 0 2px;margin-top:8px}
+.addleg{width:100%;background:#f4f7fb;color:var(--blue);border:1px dashed #b9cdea;padding:8px;font-size:13px;margin-top:2px}
+.legs{border-top:1px dashed var(--line);margin-top:8px;padding-top:6px}
+.legitem{display:grid;grid-template-columns:1fr auto;gap:7px;padding:5px 0;font-size:12.5px;line-height:1.55;align-items:start}
+.legitem .lt .num{color:var(--sub)}
+.legitem .lt .pick{font-weight:700}
+.legitem .lt .res{display:block;color:var(--sub);font-size:11.8px;margin-top:1px}
+.badge{align-self:center;font-size:11px;padding:2px 7px;border-radius:12px;font-weight:700;white-space:nowrap}
+.badge.hit{background:#e7f5ec;color:var(--green)}
+.badge.miss{background:#fdecec;color:var(--red)}
+.badge.unk{background:#f1f3f5;color:var(--sub)}
+.checkbox{background:#f7f9fc;border:1px solid #e2e8f0;border-radius:9px;padding:8px 10px;margin-top:8px;font-size:12.6px;line-height:1.7}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
+  background:rgba(28,32,38,.94);color:#fff;padding:10px 16px;border-radius:22px;
+  font-size:13px;z-index:99;opacity:0;transition:.25s;pointer-events:none;max-width:84vw;text-align:center}
+.toast.on{opacity:1}
+.foot{display:flex;gap:7px;margin-top:4px}
+.foot button{flex:1;background:#fff;border:1px solid var(--line);color:#4b5563;font-weight:500;font-size:12.5px;padding:9px}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:60}
+.mask.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="warn">
+    <b>⚠️ 使用前必读</b>
+    本工具仅用于合买方案登记、份额记录、结算计算与赛果核对：<span class="k">不收款、不托管资金、不代出票</span>。
+    请自行到官方体彩实体店购买彩票，资金往来为个人私下行为。竞彩属娱乐，理性参与。
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="card">
+    <div class="h">官网赛程 · 一键选腿 <span class="tag" id="tgCalc" onclick="openCalc()">加载</span></div>
+    <div id="calcBox" style="display:none">
+      <div class="note" style="margin-bottom:6px">只做比分玩法：点场次展开比分格，<b>同一场可以选多个比分</b>（再点一次取消），每场多覆盖几个比分就会多出对应注数；底部「单关 / 2关 / 3关 / 4关 / 全串」<b>可以多选</b>（比如同时买单关+4关），注数和金额自动算，最后点「一键生成方案」。赔率来自体彩官网实时数据。</div>
+      <div id="calcList"></div>
+      <div class="selbar">
+        <div id="calcSum"></div>
+        <div class="row" style="margin-top:6px">
+          <div style="max-width:74px"><label>倍数</label><input id="c_mult" type="number" step="1" value="1" oninput="renderCalc()"></div>
+          <div><label>总金额（留空自动算）</label><input id="c_money" type="number" step="0.01" placeholder="自动" oninput="renderCalc()"></div>
+          <div style="max-width:88px"><label>总份数</label><input id="c_share" type="number" step="1" placeholder="10" oninput="renderCalc()"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="foot">
+    <button onclick="exportData()">导出备份</button>
+    <button onclick="document.getElementById('impFile').click()">导入备份</button>
+  </div>
+  <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(this)">
+  <div class="note" style="text-align:center;margin-top:8px">
+    数据存在本机浏览器里，换手机/清缓存前记得先导出备份<br>
+    <b>要把方案发给别人，请点方案里的「🔗 分享方案给朋友」</b>——直接转发本页链接，对方打开是空的
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+/* ================= 存储 ================= */
+const LS_KEY = 'hemai_ledger_v1';
+let DB = { plans: [] };
+
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) DB = JSON.parse(raw);
+    if(!DB || !Array.isArray(DB.plans)) DB = { plans: [] };
+  }catch(e){ DB = { plans: [] }; }
+}
+function saveDB(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }catch(e){ toast('保存失败：'+e.message); } }
+
+/* ================= 工具 ================= */
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => (Number(n)||0).toFixed(2);
+const PLAY_CN = {score:'比分', spf:'胜平负', rq:'让球', total:'总进球', bqc:'半全场'};
+const COMBO_CN = {single:'单关', parlay:'全串', single_parlay:'单关+全串', k2:'2 关', k3:'3 关', k4:'4 关'};
+
+function combN(n,k){ if(k<1||k>n) return 0; k=Math.min(k,n-k); let r=1; for(let i=1;i<=k;i++) r=r*(n-k+i)/i; return Math.round(r); }
+function combList(n,k){ const out=[]; const rec=(st,cur)=>{ if(cur.length===k){out.push(cur.slice());return;} for(let i=st;i<n;i++){cur.push(i);rec(i+1,cur);cur.pop();} }; rec(0,[]); return out; }
+/* 方案实际口串数 k：单关=1，全串=腿数，k2/k3/k4 按选项 */
+function planK(p){ const ks=planKs(p); return ks.length?ks[ks.length-1]:1; }
+function comboLabel(p){
+  const n=legGroups(p.legs||[]).length, nl=(p.legs||[]).length, ks=planKs(p);
+  const parts=ks.map(k=> k===1?'单关':(k>=n?'全串':k+'关'));
+  return parts.join('+')+(nl>n?'·'+nl+'腿':'');
+}
+const WEEK_CN = ['周日','周一','周二','周三','周四','周五','周六'];
+
+function toast(msg, ms=2400){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'), ms);
+}
+function nowStr(){
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+function todayStr(){
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+function addDays(dateStr, n){
+  const d=new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+n);
+  const p=x=>String(x).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+function weekOf(dateStr){
+  const d=new Date(dateStr+'T00:00:00');
+  return WEEK_CN[d.getDay()];
+}
+function normNum(s){
+  const m=String(s||'').trim().match(/(\d{1,3})\s*$/);
+  return m ? m[1].padStart(3,'0') : '';
+}
+function normScore(s){
+  s=String(s||'').replace(/：/g,':').replace(/[－—]/g,'-').trim();
+  const m=s.match(/^(\d+)\s*[:\-]\s*(\d+)$/);
+  return m ? `${parseInt(m[1])}:${parseInt(m[2])}` : '';
+}
+function flagFromScore(sc){
+  const n=normScore(sc); if(!n) return '';
+  const [h,a]=n.split(':').map(Number);
+  return h>a?'H':(h===a?'D':'A');
+}
+function normPickSpf(p){
+  p=String(p||'').trim().toUpperCase();
+  const mp={'主胜':'H','胜':'H','3':'H','平':'D','平局':'D','1':'D','客胜':'A','负':'A','0':'A'};
+  if(mp[p]) return mp[p];
+  return ['H','D','A'].includes(p)?p:'';
+}
+
+/* ================= 日期选择 ================= */
+
+
+/* ================= 赛果接口（浏览器直连） ================= */
+const RESULT_API='https://webapi.sporttery.cn/gateway/uniform/football/getUniformMatchResultV1.qry';
+const cache={};
+
+async function fetchResults(d1,d2){
+  const key=d1+'|'+d2;
+  if(cache[key]) return cache[key];
+  const url=`${RESULT_API}?matchBeginDate=${d1}&matchEndDate=${d2}&leagueId=&pageSize=100&pageNo=1&isFix=0&matchPage=1&pcOrWap=1`;
+  let res;
+  try{ res = await fetch(url, {mode:'cors'}); }
+  catch(e){ throw new Error('网络请求失败（可能没联网或被拦截）'); }
+  if(!res.ok) throw new Error('赛果接口 HTTP '+res.status);
+  let j;
+  try{ j = await res.json(); }catch(e){ throw new Error('赛果接口返回内容异常'); }
+  if(String(j.errorCode)!=='0') throw new Error('赛果接口返回 '+j.errorCode);
+  const rows=(((j.value||{}).matchResult)||[]).map(m=>{
+    const score=String(m.sectionsNo999||'').trim();
+    return {
+      match_num:m.matchNumStr||'', num:normNum(m.matchNumStr||''), date:m.matchDate||'',
+      league:m.leagueNameAbbr||m.leagueName||'',
+      home:m.allHomeTeam||m.homeTeam||'', away:m.allAwayTeam||m.awayTeam||'',
+      score:score, half:String(m.sectionsNo1||'').trim(), flag:m.winFlag||'',
+      goal_line:m.goalLine||'', status:String(m.matchResultStatus||''), pool:m.poolStatus||'',
+      valid: !!normScore(score) && String(m.matchResultStatus)==='2'
+    };
+  });
+  cache[key]=rows;
+  return rows;
+}
+
+function findResult(leg, results, planWeek){
+  const num=normNum(leg.match_num);
+  let week='';
+  const mp=String(leg.match_num||'').match(/^周[一二三四五六日天]/);
+  if(mp) week=mp[0].replace('周天','周日');
+
+  let cands=[];
+  if(num){
+    for(const r of results){
+      if(r.num!==num) continue;
+      const rw=r.match_num.startsWith('周')?r.match_num.slice(0,2):'';
+      if(week && rw && rw!==week) continue;
+      if(!week && planWeek && rw && rw!==planWeek) continue;
+      cands.push(r);
+    }
+  }
+  if(!cands.length){
+    const h=String(leg.home||'').trim(), a=String(leg.away||'').trim();
+    if(h&&a){
+      for(const r of results){
+        if(!r.valid) continue;
+        if((r.home.includes(h)||h.includes(r.home))&&(r.away.includes(a)||a.includes(r.away))) cands.push(r);
+      }
+    }
+  }
+  if(!cands.length) return null;
+  return cands.find(c=>c.valid) || cands[0];
+}
+
+function judgeLeg(play, pick, res){
+  const score=normScore(res.score);
+  if(!score) return {hit:null, msg:'赛果未出分'};
+  const [h,a]=score.split(':').map(Number);
+  const flag=res.flag||flagFromScore(score);
+  const half=normScore(res.half);
+  const halfFlag=half?flagFromScore(half):'';
+
+  if(play==='score'){
+    const pk=String(pick).trim();
+    if(/^[胜平负]其他$/.test(pk)){
+      const want={'胜其他':'H','平其他':'D','负其他':'A'}[pk];
+      const grid=SCORE_GRID[want]||[];
+      const inGrid=grid.includes(score);
+      return {hit:(flag===want)&&!inGrid, msg:`实际 ${score}（${flag}）${inGrid?'落在比分表内':'属其他'}，选的是${pk}`};
+    }
+    return {hit:normScore(pk)===score, msg:'实际 '+score};
+  }
+  if(play==='spf') return {hit:normPickSpf(pick)===flag, msg:'实际 '+flag};
+  if(play==='rq'){
+    const p=normPickSpf(pick);
+    let adj;
+    try{ adj=h+parseFloat(res.goal_line); }catch(e){ return {hit:null, msg:'缺少官方让球盘'}; }
+    const rf=adj>a?'H':(adj===a?'D':'A');
+    return {hit:p===rf, msg:`让球${res.goal_line} 调整后 ${adj}:${a} → ${rf}`};
+  }
+  if(play==='total'){
+    const p=parseInt(String(pick).replace(/[^\d]/g,''));
+    if(isNaN(p)) return {hit:null, msg:'总进球选项无法识别'};
+    return {hit:p===(h+a), msg:'实际总进球 '+(h+a)};
+  }
+  if(play==='bqc'){
+    let p=normPickSpf(pick);
+    const raw=String(pick).toUpperCase().replace(/[\s\-/]/g,'');
+    const cands=[...raw].filter(c=>'HDA'.includes(c));
+    if(cands.length===2) p=cands.join('');
+    else if(p&&halfFlag) p=halfFlag+p;
+    if(p.length!==2||!halfFlag) return {hit:null, msg:'半全场信息不足'};
+    return {hit:p===(halfFlag+flag), msg:`实际 ${halfFlag}+${flag}`};
+  }
+  return {hit:null, msg:'该玩法暂不支持'};
+}
+
+/* ================= 官网赛程 · 比分选腿 ================= */
+const CALC_API='https://webapi.sporttery.cn/gateway/jc/football/getMatchCalculatorV1.qry?poolCode=crs&channel=c';
+let CALC={at:0,list:[]};
+let COMBO_TOK=['single'];   /* 可多选：single / k2 / k3 / k4 / all */
+let SEL=[];
+let OPENM=new Set();
+
+/* 官方比分表：主胜/平/客胜各有限格子，其余归“其他” */
+const SCORE_GRID={
+  H:['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','5:0','5:1','5:2'],
+  D:['0:0','1:1','2:2','3:3'],
+  A:['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','0:5','1:5','2:5']
+};
+const OTHER_PICK={H:'胜其他',D:'平其他',A:'负其他'};
+
+function crsParse(crs){
+  if(!crs) return null;
+  const items=[];
+  ['H','D','A'].forEach(fl=>{
+    SCORE_GRID[fl].forEach(sc=>{
+      const [h,a]=sc.split(':');
+      const k='s'+String(h).padStart(2,'0')+'s'+String(a).padStart(2,'0');
+      const v=crs[k];
+      if(v && parseFloat(v)>0) items.push({pick:sc,odds:parseFloat(v),flag:fl,other:false});
+    });
+    const ok=crs[fl==='H'?'s1sh':(fl==='D'?'s1sd':'s1sa')];
+    if(ok && parseFloat(ok)>0) items.push({pick:OTHER_PICK[fl],odds:parseFloat(ok),flag:fl,other:true});
+  });
+  return items.length?items:null;
+}
+
+async function openCalc(){
+  const box=document.getElementById('calcBox');
+  const tg=document.getElementById('tgCalc');
+  if(box.style.display!=='none'){ box.style.display='none'; tg.textContent='加载'; return; }
+  box.style.display='block';
+  if(CALC.list.length && Date.now()-CALC.at < 60*1000){ renderCalc(); return; }
+  tg.textContent='加载中…';
+  try{
+    const j=await (await fetch(CALC_API+'&_='+Date.now(),{mode:'cors'})).json();
+    if(String(j.errorCode)!=='0') throw new Error('接口返回 '+j.errorCode);
+    const list=[];
+    for(const day of ((j.value||{}).matchInfoList||[])){
+      for(const m of (day.subMatchList||[])){
+        const items=crsParse(m.crs);
+        if(!items) continue;
+        list.push({num:m.matchNumStr||'',date:m.matchDate||m.businessDate||'',time:(m.matchTime||'').slice(0,5),
+          league:m.leagueAbbName||'',home:m.homeTeamAbbName||'',away:m.awayTeamAbbName||'',items});
+      }
+    }
+    if(!list.length) throw new Error('官网暂无比分玩法在售场次');
+    CALC={at:Date.now(),list}; tg.textContent='刷新';
+    renderCalc();
+  }catch(e){
+    tg.textContent='重试';
+    box.innerHTML=`<div class="note" style="color:#b45309;line-height:1.7">拉不到官网比分赔率（${esc(e.message)}）。<br>
+      可以：① 检查网络后点右上角重试；② 在下方手动填场次、比分、赔率，功能一样完整。</div>
+      <div class="btnline"><button class="ghost" onclick="openCalc()">重新加载</button></div>`;
+    box.style.display='block';
+  }
+}
+
+function ksOfTokens(tokens,n){
+  const out=[];
+  (tokens||[]).forEach(t=>{
+    const k = t==='single'?1:(t==='all'?n:Number(String(t).replace('k','')));
+    if(k>=1&&k<=n&&!out.includes(k)) out.push(k);
+  });
+  return out.sort((a,b)=>a-b);
+}
+/* 方案保存的过关标记 → 具体关数数组（兼容老数据 combo/k 字段） */
+function planKs(p){
+  const n=legGroups(p.legs||[]).length;
+  if(p.ks&&p.ks.length) return ksOfTokens(p.ks,n);
+  if(p.combo==='single') return [1];
+  if(p.combo==='single_parlay') return [1,n].sort((a,b)=>a-b);
+  const k=(p.k&&p.k>=2)?Math.min(p.k,n):n;
+  return [k];
+}
+function betsOfKs(counts,ks){
+  let total=0;
+  ks.forEach(k=>{
+    if(k===1) total+=counts.reduce((a,b)=>a+b,0);
+    else total+=combList(counts.length,k).reduce((sum,idx)=>sum+idx.reduce((pr,i)=>pr*counts[i],1),0);
+  });
+  return total;
+}
+function toggleCombo(tok){
+  const n=selCounts().length;
+  const k = tok==='single'?1:(tok==='all'?n:Number(tok.replace('k','')));
+  if(k>=2&&k>n) return toast('场次不够，先多选几场');
+  if(tok==='all'&&n<2) return toast('全串至少要 2 场');
+  const i=COMBO_TOK.indexOf(tok);
+  if(i>=0){
+    if(COMBO_TOK.length===1) return toast('至少留一个过关方式');
+    COMBO_TOK.splice(i,1);
+  }else COMBO_TOK.push(tok);
+  renderCalc();
+}
+function toggleMatch(num){
+  if(OPENM.has(num)) OPENM.delete(num); else OPENM.add(num);
+  renderCalc();
+}
+function pickLeg(num,play,pick){
+  const m=CALC.list.find(x=>x.num===num); if(!m) return;
+  const idx=SEL.findIndex(s=>s.match_num===num&&s.pick===pick);
+  if(idx>=0){ SEL.splice(idx,1); renderCalc(); return; }   /* 再点一次=取消 */
+  const it=m.items.find(x=>x.pick===pick);
+  if(!it) return toast('该比分暂无赔率');
+  SEL.push({match_num:m.num,home:m.home,away:m.away,play:'score',pick:it.pick,odds:it.odds,date:m.date});
+  renderCalc();
+}
+/* 已选比分按场归并，得到每场选了几个 */
+function selCounts(){
+  const map=new Map();
+  SEL.forEach(x=>{ const k=x.match_num; map.set(k,(map.get(k)||0)+1); });
+  return [...map.values()];
+}
+/* 方案腿数按场归并 */
+function legGroups(legs){
+  const map=new Map();
+  (legs||[]).forEach(l=>{ const k=l.match_num||('#'+(l.home||'')+'|'+(l.away||'')); if(!map.has(k)) map.set(k,[]); map.get(k).push(l); });
+  return [...map.values()];
+}
+
+function renderCalc(){
+  if(!CALC.list.length) return;
+  const groups={};
+  CALC.list.forEach(m=>{ (groups[m.date]=groups[m.date]||[]).push(m); });
+  let html='';
+  Object.keys(groups).sort().forEach(d=>{
+    html+=`<div class="oLab" style="margin:10px 0 2px;font-weight:700;color:#3b4657">${esc(d)} · ${groups[d].length} 场（比分）</div>`;
+    groups[d].forEach(m=>{
+      const mine=SEL.filter(s=>s.match_num===m.num);
+      const open=OPENM.has(m.num);
+      const head=mine.length
+        ? `<span class="selTag">已选 ${mine.length} 个：`+mine.map(x=>esc(x.pick)+'@'+x.odds).join('、')+`</span>`
+        : `<span class="selTag gray">未选</span>`;
+      html+=`<div class="calcrow">
+        <div class="mt1"><span class="num">${esc(m.num)}</span><span class="lg">${esc(m.league)}</span><span class="wt">${esc(m.time)}</span></div>
+        <div class="mt2" onclick="toggleMatch('${m.num}')">
+          ${esc(m.home)} <span style="color:#9aa5b1">vs</span> ${esc(m.away)}
+          <span style="float:right;font-size:12px;color:#1d6fe0">${open?'收起 ▴':'选比分 ▾'}</span>
+        </div>
+        <div style="margin-top:2px">${head}</div>`;
+      if(open){
+        ['H','D','A'].forEach(fl=>{
+          const arr=m.items.filter(x=>x.flag===fl);
+          if(!arr.length) return;
+          html+=`<div class="oLab">${fl==='H'?'主胜':(fl==='D'?'平局':'客胜')}</div><div class="sgrid">`;
+          arr.forEach(x=>{
+            const on=mine.some(y=>y.pick===x.pick)?' on':'';
+            html+=`<button class="scbtn${on}" onclick="pickLeg('${m.num}','score','${x.pick}')">
+              <b>${esc(x.pick)}</b><small>${x.odds}</small></button>`;
+          });
+          html+=`</div>`;
+        });
+      }
+      html+=`</div>`;
+    });
+  });
+  document.getElementById('calcList').innerHTML=html;
+
+  const counts=selCounts(), n=counts.length, nl=SEL.length;
+  const mult=Math.max(1,parseInt(document.getElementById('c_mult').value)||1);
+  const ks = ksOfTokens(COMBO_TOK,n);
+  const bets = betsOfKs(counts,ks);
+  const amount = 2*bets*mult;
+  const mv=parseFloat(document.getElementById('c_money').value);
+  const money=(mv>0)?mv:amount;
+  const sh=parseInt(document.getElementById('c_share').value)||10;
+  const kbtn=(tok,label)=>{
+    const k = tok==='single'?1:(tok==='all'?n:Number(tok.replace('k','')));
+    const dis = (k>=2 && n<k) || (tok==='all' && n<2);
+    const on = COMBO_TOK.includes(tok)?' on':'';
+    return `<button class="kbtn${on}" ${dis?'disabled':''} onclick="toggleCombo('${tok}')">${label}</button>`;
+  };
+  const parts = ks.map(k=>{
+    const b = k===1 ? counts.reduce((a,c)=>a+c,0) : combList(n,k).reduce((sum,idx)=>sum+idx.reduce((pr,i)=>pr*counts[i],1),0);
+    return `${k===1?'单关':(k>=n?'全串':k+'关')} ${b} 注`;
+  }).join(' + ');
+  document.getElementById('calcSum').innerHTML=`
+    <div class="olab2">过关方式（决定注数）</div>
+    <div class="krow">
+      ${kbtn('single','单关')}${kbtn('k2','2关')}${kbtn('k3','3关')}${kbtn('k4','4关')}${kbtn('all','全串')}
+    </div>
+    <div class="note" style="margin-top:2px">过关方式可多选（再点一次取消），比如同时买单关+4关</div>
+    <div class="meta" style="margin-top:6px">已选 <b>${n}</b> 场 / <b>${nl}</b> 个比分 ｜ ${esc(ks.map(k=>k===1?'单关':(k>=n?'全串':k+'关')).join('+')||'—')}：<b>${bets}</b> 注 × 2 元 × ${mult}倍 = <b>${amount.toFixed(2)}</b> 元
+      <br>方案本金 <b>${money.toFixed(2)}</b> 元 ／ ${sh} 份 ｜ 每份 <b>${(money/sh).toFixed(2)}</b> 元
+      ${ks.some(k=>k>=2)?`<br><span class="note">（各场比分数 ${counts.join('×')} → ${parts}）</span>`:''}</div>
+    <div class="btnline">
+      <button ${n?'':'disabled style="opacity:.5"'} onclick="genPlanFromCalc()">一键生成方案</button>
+      <button class="gray" onclick="SEL=[];renderCalc()" style="flex:0 0 66px">清空</button>
+    </div>`;
+}
+
+
+function genPlanFromCalc(){
+  if(!SEL.length) return toast('还没选场次');
+  const counts=selCounts(), n=counts.length;
+  const mult=Math.max(1,parseInt(document.getElementById('c_mult').value)||1);
+  const ks=ksOfTokens(COMBO_TOK,n);
+  const bets=betsOfKs(counts,ks);
+  if(!bets) return toast('这个关数选不了（场次不够）');
+  const mv=parseFloat(document.getElementById('c_money').value);
+  const money=(mv>0)?mv:2*bets*mult;
+  let share=parseInt(document.getElementById('c_share').value);
+  if(!(share>=1)) share=10;
+  const date=SEL[0].date;
+  const [,mm,dd]=String(date).split('-');
+  const kname = ks.map(k=>k===1?'单关':(k>=n?'全串':k+'关')).join('+');
+  const title=`${parseInt(mm)}月${parseInt(dd)}日 ${n}场比分${kname}${SEL.length>n?'（'+SEL.length+'腿）':''}`;
+
+  const plan={
+    id:Date.now(), title, match_info:'', plan_date:date,
+    combo:(ks.length===1&&ks[0]===1)?'single':'parlay', k:(ks.length===1&&ks[0]>=2)?ks[0]:null, ks:COMBO_TOK.slice(),
+    multiple:mult, total_money:money, total_share:share, share_price:money/share,
+    status:'open', bonus_total:null, settle_note:'', create_time:nowStr(), settle_time:null,
+    check_time:null, check_msg:'',
+    legs:(()=>{const ord=[...new Set(SEL.map(x=>x.match_num))];
+      return ord.flatMap(nm=>SEL.filter(x=>x.match_num===nm)).map(x=>({match_num:x.match_num,home:x.home,away:x.away,play:'score',pick:x.pick,odds:x.odds,
+        r_score:null,r_half:null,r_flag:null,r_goal:null,r_status:null,r_match_num:null,r_team:null,h:null}));})(),
+    joins:[]
+  };
+  DB.plans.unshift(plan); saveDB();
+  SEL=[];
+  document.getElementById('calcBox').style.display='none';
+  document.getElementById('tgCalc').textContent='加载';
+  toast('方案已生成：'+title);
+  render(); renderCalc();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ================= 方案计算 ================= */
+function planCalc(p){
+  const used=p.joins.reduce((s,j)=>s+j.share_num,0);
+  const left=p.total_share-used;
+  const cost=used*p.share_price;
+  const perShare = (p.status==='settled'&&p.bonus_total!=null) ? p.bonus_total/p.total_share : 0;
+  const profit = p.status==='settled' ? (p.bonus_total||0)-cost : null;
+  const roi = (p.status==='settled'&&cost) ? ((p.bonus_total||0)-cost)/cost*100 : null;
+  return {used,left,cost,perShare,profit,roi};
+}
+
+function calcSuggested(p){
+  const legs=p.legs||[];
+  if(!legs.length) return {value:null, msg:'没有场次明细，无法自动计算'};
+  if(legs.some(l=>l.hit===null||l.hit===undefined)) return {value:null, msg:'还有比分未出结果或无法判定'};
+  if(legs.some(l=>l.odds===''||l.odds==null||isNaN(parseFloat(l.odds)))) return {value:null, msg:'有比分没填赔率，奖金请手工确认'};
+  const gs=legGroups(legs), n=gs.length, mult=p.multiple||1, ks=planKs(p);
+  const hitOdds=g=>g.filter(l=>l.hit===true).reduce((sum,l)=>sum+parseFloat(l.odds),0);
+  const hitN=g=>g.filter(l=>l.hit===true).length;
+
+  let value=0, bets=0, wins=0;
+  const segs=[];
+
+  if(ks.includes(1)){
+    const singleBets=legs.length, singleWins=gs.reduce((sum,g)=>sum+hitN(g),0);
+    value += gs.reduce((sum,g)=>sum+2*hitOdds(g)*mult,0);
+    bets += singleBets; wins += singleWins;
+    segs.push(`单关 ${singleWins}/${singleBets}`);
+  }
+
+  ks.filter(k=>k>=2&&k<=n).forEach(k=>{
+    let kb=0, kw=0, kv=0;
+    combList(n,k).forEach(idx=>{
+      let c=1, w=1, o=1;
+      idx.forEach(i=>{ c*=gs[i].length; w*=hitN(gs[i]); o*=hitOdds(gs[i]); });
+      kb+=c; kw+=w; kv += 2*o*mult;
+    });
+    bets+=kb; wins+=kw; value+=kv;
+    segs.push(`${k>=n?'全串':k+'关'} ${kw}/${kb}`);
+  });
+
+  const label = ks.map(k=>k===1?'单关':(k>=n?'全串':k+'关')).join('+');
+  return {value, msg:`${label}：${bets} 注中 ${wins} 注（${segs.join('，')}）`};
+}
+
+/* ================= 表单 ================= */
+
+
+/* ================= 操作 ================= */
+function findPlan(id){ return DB.plans.find(p=>String(p.id)===String(id)); }
+
+function joinPlan(id){
+  const p=findPlan(id); if(!p) return;
+  const name=(document.getElementById('jn_'+id).value||'').trim();
+  const num=parseInt(document.getElementById('js_'+id).value);
+  if(!name) return toast('请填写认领人');
+  if(!(num>0)) return toast('认领份数需大于 0');
+  const {left}=planCalc(p);
+  if(num>left) return toast(`份额不足，剩余 ${left} 份`);
+  const exist=p.joins.find(j=>j.username===name);
+  if(exist) exist.share_num+=num;
+  else p.joins.push({username:name,share_num:num,join_time:nowStr()});
+  saveDB(); toast('认领成功，记得自己去实体店出票'); render();
+}
+function delJoin(id,idx){
+  const p=findPlan(id); if(!p) return;
+  p.joins.splice(idx,1); saveDB(); toast('已移除'); render();
+}
+async function autocheck(id){
+  const p=findPlan(id); if(!p) return;
+  if(!p.legs.length) return toast('没有场次明细，无法核对');
+  const btn=document.getElementById('ac_'+id);
+  if(btn){ btn.disabled=true; btn.textContent='查询中…'; }
+
+  const d=p.plan_date||todayStr();
+  const d1=addDays(d,-1), d2=addDays(d,1);
+  const week=weekOf(d);
+  let results;
+  try{ results=await fetchResults(d1,d2); }
+  catch(e){
+    if(btn){ btn.disabled=false; btn.textContent='核对赛果'; }
+    return toast('拉赛果失败：'+e.message, 4000);
+  }
+
+  let unknown=0, hits=0;
+  for(const leg of p.legs){
+    const res=findResult(leg, results, week);
+    if(!res){
+      leg.hit=null; leg.r_status='未找到'; leg.r_score=null; leg.r_match_num=null; leg.r_team=null;
+      unknown++; continue;
+    }
+    const r=judgeLeg(leg.play, leg.pick, res);
+    leg.hit=r.hit; leg.r_score=res.score; leg.r_half=res.half; leg.r_flag=res.flag;
+    leg.r_status=res.valid?'已出分':(res.score||res.status||'未出分');
+    leg.r_match_num=res.match_num; leg.r_team=res.home+' vs '+res.away;
+    if(r.hit===true) hits++;
+    if(r.hit===null) unknown++;
+  }
+  const {value,msg}=calcSuggested(p);
+  p.check_time=nowStr();
+  p.check_msg=(value!=null?`${msg}，建议奖金 ${value.toFixed(2)} 元`:`暂时无法算奖金${unknown?`（${unknown} 个比分未出结果）`:''}`);
+  saveDB(); render();
+
+  toast(`${p.check_msg}｜${msg}`, 3600);
+  if(btn){ btn.disabled=false; btn.textContent='核对赛果'; }
+}
+
+/* 直连不出去时，手填赛果也能判定 */
+function manualJudge(id){
+  const p=findPlan(id); if(!p) return;
+  let hits=0, unknown=0, filled=0;
+  p.legs.forEach((l,i)=>{
+    const sc=(document.getElementById(`ms_${id}_${i}`)||{}).value||'';
+    const hf=(document.getElementById(`mh_${id}_${i}`)||{}).value||'';
+    const gl=(document.getElementById(`mg_${id}_${i}`)||{}).value||'';
+    if(!normScore(sc)){ l.hit=null; l.r_status='未填赛果'; return; }
+    filled++;
+    const r=judgeLeg(l.play, l.pick, {score:sc, half:hf, flag:'', goal_line:gl});
+    l.hit=r.hit; l.r_score=normScore(sc); l.r_half=normScore(hf); l.r_flag=flagFromScore(sc);
+    l.r_goal=gl; l.r_status='手填'; l.r_match_num=null; l.r_team=null;
+    if(r.hit===true) hits++;
+    if(r.hit===null) unknown++;
+  });
+  if(!filled) return toast('还没填任何一场的比分');
+  const {value,msg}=calcSuggested(p);
+  p.check_time=nowStr();
+  p.check_msg=(value!=null?`${msg}，建议奖金 ${value.toFixed(2)} 元`:`暂时无法算奖金${unknown?`（${unknown} 个比分未出结果）`:''}`);
+  saveDB(); render();
+  toast(`${p.check_msg}｜${msg}`, 3400);
+}
+function settle(id, bonus){
+  const p=findPlan(id); if(!p) return;
+  if(isNaN(bonus)||bonus<0) return toast('奖金需 ≥ 0');
+  p.status='settled'; p.bonus_total=bonus;
+  p.settle_note=(document.getElementById('sn_'+id)?.value||'').trim();
+  p.settle_time=nowStr();
+  saveDB(); toast('已结算'); render();
+}
+function settleManual(id){
+  const v=parseFloat(document.getElementById('sb_'+id).value);
+  if(isNaN(v)||v<0) return toast('请输入奖金（未中填 0）');
+  settle(id, v);
+}
+function settleSuggested(id, v){
+  if(!confirm(`按建议奖金 ${money(v)} 元结算？`)) return;
+  settle(id, v);
+}
+function editPlanMeta(id){
+  const p=findPlan(id); if(!p) return;
+  const m=prompt('总金额（元）', p.total_money);
+  if(m===null) return;
+  const sh=prompt('总份数', p.total_share);
+  if(sh===null) return;
+  const mm=parseFloat(m), ss=parseInt(sh);
+  const used=p.joins.reduce((a,j)=>a+j.share_num,0);
+  if(!(mm>0)) return toast('金额要大于 0');
+  if(!(ss>=1)) return toast('份数至少 1');
+  if(ss<used) return toast('份数不能少于已认领的 '+used+' 份');
+  p.total_money=mm; p.total_share=ss; p.share_price=mm/ss;
+  saveDB(); render(); toast('已更新金额和份数');
+}
+function reopen(id){
+  const p=findPlan(id); if(!p) return;
+  if(!confirm('撤销结算？将清空奖金记录')) return;
+  p.status='open'; p.bonus_total=null; p.settle_note=''; p.settle_time=null;
+  saveDB(); toast('已撤销'); render();
+}
+function delPlan(id){
+  if(!confirm('删除该方案及全部认领、场次记录？')) return;
+  DB.plans=DB.plans.filter(p=>String(p.id)!==String(id));
+  saveDB(); toast('已删除'); render();
+}
+
+/* ================= 备份 ================= */
+function exportData(){
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`合买台账备份-${todayStr()}.json`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+  toast('已导出备份');
+}
+function importData(input){
+  const f=input.files&&input.files[0];
+  if(!f) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!data||!Array.isArray(data.plans)) throw new Error('文件格式不对');
+      if(!confirm(`将导入 ${data.plans.length} 个方案，会覆盖当前数据，继续？`)) return;
+      DB=data; saveDB(); render(); toast('导入成功');
+    }catch(e){ toast('导入失败：'+e.message); }
+  };
+  reader.readAsText(f);
+  input.value='';
+}
+
+/* ================= 渲染 ================= */
+function renderLegs(p, settled){
+  if(!p.legs.length) return '';
+  const items=p.legs.map(l=>{
+    let badge='<span class="badge unk">待核</span>';
+    if(l.hit===true) badge='<span class="badge hit">命中</span>';
+    else if(l.hit===false) badge='<span class="badge miss">未中</span>';
+    else if(l.r_status) badge=`<span class="badge unk">${esc(l.r_status)}</span>`;
+
+    const bits=[];
+    if(l.r_match_num) bits.push(esc(l.r_match_num));
+    if(!l.match_num && l.r_team) bits.push(esc(l.r_team));
+    if(l.r_score) bits.push('比分 '+esc(l.r_score));
+    const res = bits.length?`<span class="res">${bits.join(' · ')}</span>`:'<span class="res">赛果未核对</span>';
+
+    return `<div class="legitem">
+      <div class="lt">
+        <span class="num">${esc(l.match_num||'')}</span>${l.match_num?' ':''}${esc(l.home)}${l.home?' vs ':''}${esc(l.away)}
+        · ${esc(PLAY_CN[l.play]||l.play)} · 选 <span class="pick">${esc(l.pick)}</span>${l.odds?(' @'+l.odds):''}
+        ${res}
+      </div>${badge}</div>`;
+  }).join('');
+  return `<div class="legs">${items}</div>`;
+}
+
+function render(){
+  const wrap=document.getElementById('list');
+  if(!DB.plans.length){
+    wrap.innerHTML='<div class="card"><div class="empty">还没有方案，点上面「展开」新建一个。</div></div>';
+    renderStats();
+    return;
+  }
+  wrap.innerHTML=DB.plans.map(p=>{
+    const c=planCalc(p);
+    const isSettled=p.status==='settled';
+    const pct=p.total_share?Math.min(100,Math.round(c.used/p.total_share*100)):0;
+    const tagCls=isSettled?'ok':(c.left===0?'warn':'');
+    const tagTxt=isSettled?'已结算':(c.left===0?'已满份':'招募中');
+
+    const joins=p.joins.length?p.joins.map((j,idx)=>{
+      const rt=isSettled
+        ?`<span class="rt ${j.share_num*c.perShare>0?'pos':'zero'}">${money(j.share_num*c.perShare)} 元</span>`
+        :`<button class="sm gray" onclick="delJoin(${p.id},${idx})">移除</button>`;
+      return `<div class="it"><div><span class="nm">${esc(j.username)}</span><span class="ex">${j.share_num} 份 · 本金 ${money(j.share_num*p.share_price)} 元</span></div>${rt}</div>`;
+    }).join(''):'<div class="empty">还没有人认领</div>';
+
+    let body=`
+      ${p.match_info?`<div class="mi">${esc(p.match_info)}</div>`:''}
+      <div class="meta">
+        ${p.plan_date?`日期 <b>${esc(p.plan_date)}</b> ｜ `:''}${esc(comboLabel(p))}${p.multiple>1?(' × '+p.multiple+'倍'):''}<br>
+        本金 <b>${money(p.total_money)}</b> 元 ｜ ${p.total_share} 份 ｜ 每份 <b>${p.share_price.toFixed(2)}</b> 元<br>
+        已认领 <b>${c.used}</b> 份（${money(c.cost)} 元）｜ ${isSettled?'未认领':'剩余'} <b>${c.left}</b> 份
+      </div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      ${renderLegs(p,isSettled)}
+      <div class="plist">${joins}</div>`;
+
+    if(!isSettled){
+      if(p.legs.length){
+        body+=`<div class="btnline"><button class="ghost" id="ac_${p.id}" onclick="autocheck(${p.id})">核对赛果</button></div>`;
+        if(p.check_time){
+          const m=(p.check_msg||'').match(/建议奖金\s*([\d.]+)\s*元/);
+          body+=`<div class="checkbox">${esc(p.check_msg||'')}<br><span class="note">核对时间 ${esc(p.check_time)}</span>
+            ${m?`<div class="btnline"><button onclick="settleSuggested(${p.id},${parseFloat(m[1])})">按建议奖金 ${m[1]} 元结算</button></div>`:''}
+          </div>`;
+        }
+        body+=`<details class="checkbox" style="margin-top:8px">
+          <summary style="cursor:pointer;font-weight:600">手动录入赛果（联网核对不到时用）</summary>
+          ${p.legs.map((l,i)=>`<div class="row" style="margin-top:6px">
+            <input id="ms_${p.id}_${i}" placeholder="全场比分 2:1" value="${esc(l.r_score||'')}" style="flex:1.15">
+            <input id="mh_${p.id}_${i}" placeholder="半场 1:0" value="${esc(l.r_half||'')}" style="flex:1">
+            <input id="mg_${p.id}_${i}" placeholder="让球盘" value="${esc(l.r_goal||'')}" style="flex:0 0 78px">
+          </div>`).join('')}
+          <div class="btnline"><button class="ghost" onclick="manualJudge(${p.id})">用填的赛果判定</button></div>
+          <div class="note" style="margin-top:5px">上半场比分只对"半全场"必要；让球盘只在"让球"玩法需要（如 -1 / +1）；胜平负会自动由比分推出。</div>
+        </details>`;
+      }
+      if(c.left>0){
+        body+=`<div class="row" style="margin-top:8px">
+          <input id="jn_${p.id}" placeholder="认领人">
+          <input id="js_${p.id}" type="number" step="1" placeholder="份数" style="max-width:80px">
+          <button class="sm" onclick="joinPlan(${p.id})" style="flex:0 0 70px">认领</button>
+        </div>`;
+      }
+      body+=`<div class="row" style="margin-top:8px">
+        <input id="sb_${p.id}" type="number" step="0.01" placeholder="奖金（未中填0）">
+        <input id="sn_${p.id}" placeholder="备注（选填）">
+      </div>
+      <div class="btnline">
+        <button onclick="settleManual(${p.id})">录入结算</button>
+        <button class="ghost" onclick="editPlanMeta(${p.id})" style="flex:0 0 104px">改金额/份数</button>
+      </div>
+      <div class="btnline" style="margin-top:7px">
+        <button class="ghost" onclick="sharePlan(${p.id})">🔗 分享方案给朋友</button>
+      </div>
+      <div class="btnline" style="margin-top:7px">
+        <button class="red" onclick="delPlan(${p.id})" style="width:100%">删除方案</button>
+      </div>`;
+    }else{
+      const prof=c.profit||0;
+      body+=`<div class="settlebox">
+        ${p.bonus_total>0?`🎉 中奖 ｜ 总奖金 <span class="big">${money(p.bonus_total)}</span> 元 ｜ 每份派 <b>${money(c.perShare)}</b> 元`
+          :`💤 未中奖 ｜ 总奖金 <b>0.00</b> 元`}<br>
+        投入 <b>${money(c.cost)}</b> 元 ｜ 盈亏 <b style="color:${prof>0?'#0f9d58':'#6b7280'}">${prof>0?'+':''}${money(prof)}</b> 元${c.roi==null?'':`（${c.roi>0?'+':''}${c.roi.toFixed(1)}%）`}
+        ${p.settle_note?`<br><span class="note">备注：${esc(p.settle_note)}</span>`:''}
+        <br><span class="note">结算时间：${esc(p.settle_time)}</span>
+      </div>
+      <div class="btnline">
+        <button class="ghost" onclick="reopen(${p.id})">撤销结算</button>
+        <button class="red" onclick="delPlan(${p.id})" style="flex:0 0 64px">删除</button>
+      </div>`;
+    }
+
+    return `<div class="card plan ${isSettled?'settled':''}">
+      <div class="h"><span>${esc(p.title)}</span><span class="tag ${tagCls}">${tagTxt}</span></div>${body}</div>`;
+  }).join('');
+  renderStats();
+}
+
+function renderStats(){
+  const settled=DB.plans.filter(p=>p.status==='settled');
+  let cost=0, bonus=0, win=0;
+  settled.forEach(p=>{
+    const c=planCalc(p);
+    cost+=c.cost; bonus+=(p.bonus_total||0);
+    if((p.bonus_total||0)>0) win++;
+  });
+  const profit=bonus-cost;
+  const rate=settled.length?(win/settled.length*100):0;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="v">${DB.plans.length}</div><div class="k2">全部方案</div></div>
+    <div class="stat"><div class="v">${settled.length}</div><div class="k2">已结算</div></div>
+    <div class="stat"><div class="v" style="color:${profit>=0?'#0f9d58':'#d93025'}">${profit>0?'+':''}${money(profit)}</div><div class="k2">累计盈亏(元)</div></div>
+    <div class="stat"><div class="v">${rate.toFixed(0)}%</div><div class="k2">中奖率(${win}/${settled.length})</div></div>`;
+}
+
+/* ================= 分享 / 导入链接 ================= */
+function b64uEnc(str){ return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function b64uDec(s){ let t=String(s).replace(/-/g,'+').replace(/_/g,'/'); while(t.length%4) t+='='; return decodeURIComponent(escape(atob(t))); }
+
+function sharePlan(id){
+  const p=findPlan(id); if(!p) return;
+  const slim=JSON.parse(JSON.stringify(p));
+  slim.id=Date.now();
+  const url=location.href.split('#')[0]+'#s='+b64uEnc(JSON.stringify({v:1,p:slim}));
+  copyLink(url);
+}
+function copyLink(url){
+  const okMsg='链接已复制，发给朋友，对方打开就能看到这个方案并能认领份额';
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>toast(okMsg,3600)).catch(()=>fallbackCopy(url));
+  }else fallbackCopy(url);
+}
+function fallbackCopy(url){
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=url; ta.style.position='fixed'; ta.style.left='-9999px';
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,url.length);
+    const ok=document.execCommand&&document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok) return toast('链接已复制，发给朋友即可',3600);
+  }catch(e){}
+  prompt('长按下面链接复制，发给朋友：', url);
+}
+function loadShare(){
+  const h=location.hash||'';
+  if(h.indexOf('#s=')!==0) return;
+  let obj=null;
+  try{ obj=JSON.parse(b64uDec(h.slice(3))); }catch(e){ obj=null; }
+  history.replaceState(null,'',location.pathname+location.search);
+  if(!obj||!obj.p) return toast('分享链接已损坏，让对方重新发一次');
+  const p=obj.p;
+  const money0=Number(p.total_money)||0, sp=Number(p.share_price)||0;
+  const ask=`收到分享的合买方案：\n\n${p.title}\n本金 ${money0.toFixed(2)} 元 ｜ ${p.total_share} 份 ｜ 每份 ${sp.toFixed(2)} 元\n\n导入到本机台账（可在下面认领份额）？`;
+  if(confirm(ask)){
+    p.id=Date.now(); p.joins=p.joins||[]; p.status=p.status||'open';
+    DB.plans.unshift(p); saveDB(); render(); toast('已导入分享方案，可在里面认领份额');
+  }
+}
+
+/* ================= 初始化 ================= */
+loadDB();
+
+render();
+loadShare();
+</script>
+</body>
+</html>
